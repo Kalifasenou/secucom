@@ -1,4 +1,4 @@
-package com.secucom.spring.login.payload.response;
+package com.bezkoder.spring.login.payload.response;
 
 import java.util.List;
 

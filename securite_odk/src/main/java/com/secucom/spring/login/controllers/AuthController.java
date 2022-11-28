@@ -1,4 +1,4 @@
-package com.secucom.spring.login.controllers;
+package com.bezkoder.spring.login.controllers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -22,17 +22,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.secucom.spring.login.models.ERole;
-import com.secucom.spring.login.models.Role;
-import com.secucom.spring.login.models.User;
-import com.secucom.spring.login.payload.request.LoginRequest;
-import com.secucom.spring.login.payload.request.SignupRequest;
-import com.secucom.spring.login.payload.response.UserInfoResponse;
-import com.secucom.spring.login.payload.response.MessageResponse;
-import com.secucom.spring.login.repository.RoleRepository;
-import com.secucom.spring.login.repository.UserRepository;
-import com.secucom.spring.login.security.jwt.JwtUtils;
-import com.secucom.spring.login.security.services.UserDetailsImpl;
+import com.bezkoder.spring.login.models.ERole;
+import com.bezkoder.spring.login.models.Role;
+import com.bezkoder.spring.login.models.User;
+import com.bezkoder.spring.login.payload.request.LoginRequest;
+import com.bezkoder.spring.login.payload.request.SignupRequest;
+import com.bezkoder.spring.login.payload.response.UserInfoResponse;
+import com.bezkoder.spring.login.payload.response.MessageResponse;
+import com.bezkoder.spring.login.repository.RoleRepository;
+import com.bezkoder.spring.login.repository.UserRepository;
+import com.bezkoder.spring.login.security.jwt.JwtUtils;
+import com.bezkoder.spring.login.security.services.UserDetailsImpl;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -69,21 +69,27 @@ public class AuthController {
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
 
-    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+   /* return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getUsername(),
                                    userDetails.getEmail(),
-                                   roles));
+                                   roles));*/
+    String rooool= "ROLE_User";
+    if (roles.equals(rooool)){
+      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body("Bienvenue User");
+    }
+    else
+      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body("Bienvenue Admin, Hello User");
   }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+      return ResponseEntity.badRequest().body(new MessageResponse("Erreur: ce nom d'utilisateur existe deja"));
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+      return ResponseEntity.badRequest().body(new MessageResponse("Erreur: cet email est deja utilisé !"));
     }
 
     // Create new user's account
@@ -96,7 +102,7 @@ public class AuthController {
 
     if (strRoles == null) {
       Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+          .orElseThrow(() -> new RuntimeException("Erreur: Impossible de trouver le rôle!!"));
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
@@ -124,13 +130,13 @@ public class AuthController {
     user.setRoles(roles);
     userRepository.save(user);
 
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok(new MessageResponse("Collaborateur ajouter avec succes"));
   }
 
   @PostMapping("/signout")
   public ResponseEntity<?> logoutUser() {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(new MessageResponse("You've been signed out!"));
+        .body(new MessageResponse("Vous vous êtes deconnecter!"));
   }
 }

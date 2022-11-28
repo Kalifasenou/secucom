@@ -1,8 +1,5 @@
-package com.secucom.spring.login.security;
+package com.bezkoder.spring.login.security;
 
-import com.secucom.spring.login.security.jwt.AuthEntryPointJwt;
-import com.secucom.spring.login.security.jwt.AuthTokenFilter;
-import com.secucom.spring.login.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.bezkoder.spring.login.security.jwt.AuthEntryPointJwt;
+import com.bezkoder.spring.login.security.jwt.AuthTokenFilter;
+import com.bezkoder.spring.login.security.services.UserDetailsServiceImpl;
 
 @Configuration
 //@EnableWebSecurity
@@ -46,19 +47,19 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
       DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-       
+
       authProvider.setUserDetailsService(userDetailsService);
       authProvider.setPasswordEncoder(passwordEncoder());
-   
+
       return authProvider;
   }
-  
+
 //  @Bean
 //  @Override
 //  public AuthenticationManager authenticationManagerBean() throws Exception {
 //    return super.authenticationManagerBean();
 //  }
-  
+
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
     return authConfig.getAuthenticationManager();
@@ -80,20 +81,23 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 //
 //    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 //  }
-  
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        //.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+        //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
         .antMatchers("/api/test/**").permitAll()
+        .antMatchers("/api/User/**").permitAll()
         .anyRequest().authenticated();
-    
+    http.formLogin();
+    http.oauth2Login();
+
     http.authenticationProvider(authenticationProvider());
 
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    
+
     return http.build();
   }
 }

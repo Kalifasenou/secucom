@@ -1,4 +1,4 @@
-package com.secucom.spring.login.payload.response;
+package com.bezkoder.spring.login.payload.response;
 
 public class MessageResponse {
 	private String message;

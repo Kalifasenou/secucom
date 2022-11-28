@@ -1,4 +1,4 @@
-package com.secucom.spring.login.security.jwt;
+package com.bezkoder.spring.login.security.jwt;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.secucom.spring.login.security.services.UserDetailsImpl;
+import com.bezkoder.spring.login.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 
 @Component
@@ -79,4 +79,5 @@ public class JwtUtils {
         .signWith(SignatureAlgorithm.HS512, jwtSecret)
         .compact();
   }
+
 }
